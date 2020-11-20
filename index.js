@@ -14,13 +14,26 @@ const LaunchRequestHandler = {
     "food, recycling and general rubbish" : "food and paper"
     
     
-    const speakOutput = 'Welcome to the bin helper, this friday it is ' + bins + ' collection'
+    const speakOutput = 'Welcome to the bin bot, this friday it is ' + bins + ' collection. Don\'t forget to check the Christmas timetable.'
     return handlerInput.responseBuilder
       .speak(speakOutput)
       .getResponse();
   },
 };
 
+const ChristmasHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ChristmasIntent';
+  },
+  handle(handlerInput) {
+    const speakOutput = 'The Christmas Timetable is not available yet, please check later. Jingle Bells!';
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .getResponse();
+  },
+};
 const HelpHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -80,6 +93,7 @@ const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
+    ChristmasHandler,
     HelpHandler,
     CancelAndStopHandler,
     SessionEndedRequestHandler,
