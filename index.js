@@ -35,29 +35,29 @@ const ChristmasHandler = {
   },
 };
 
-const AstronautHandler = {
+const ShoppingHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
       || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AstronautIntent');
+      && handlerInput.requestEnvelope.request.intent.name === 'ShoppingIntent');
   },
   async handle(handlerInput) {
     let outputSpeech = 'This is the default message.';
 
-    await getRemoteData('http://react-thinkboard.herokuapp.com/api/v1/postits.json')
+    await getRemoteData('https://bawden-shopping-list.herokuapp.com/api/v1/items.json')
       .then((response) => {
         const data = JSON.parse(response);
-        outputSpeech = `There are currently ${data.length} messages on the thinkboard. `;
+        outputSpeech = `There are currently ${data.length} items on your shopping list. `;
         for (let i = 0; i < data.length; i += 1) {
           if (i === 0) {
             // first record
-            outputSpeech = `${outputSpeech}The messages are: ${data[i].content}, `;
+            outputSpeech = `${outputSpeech}The items are: ${data[i].name}, `;
           } else if (i === data.length - 1) {
             // last record
-            outputSpeech = `${outputSpeech}and ${data[i].content}.`;
+            outputSpeech = `${outputSpeech}and ${data[i].name}.`;
           } else {
             // middle record(s)
-            outputSpeech = `${outputSpeech + data[i].content}, `;
+            outputSpeech = `${outputSpeech + data[i].name}, `;
           }
         }
       })
@@ -73,6 +73,43 @@ const AstronautHandler = {
   },
 };
 
+const RecipeHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
+      || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'RecipeIntent');
+  },
+  async handle(handlerInput) {
+    let outputSpeech = 'This is the default message.';
+
+    await getRemoteData('https://bawden-shopping-list.herokuapp.com/api/v1/recipes.json')
+      .then((response) => {
+        const data = JSON.parse(response);
+        outputSpeech = `There are currently ${data.length} meals in your shopping list. `;
+        for (let i = 0; i < data.length; i += 1) {
+          if (i === 0) {
+            // first record
+            outputSpeech = `${outputSpeech}The meals are: ${data[i].name}, `;
+          } else if (i === data.length - 1) {
+            // last record
+            outputSpeech = `${outputSpeech}and ${data[i].name}.`;
+          } else {
+            // middle record(s)
+            outputSpeech = `${outputSpeech + data[i].name}, `;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(`ERROR: ${err.message}`);
+        // set an optional error message here
+        // outputSpeech = err.message;
+      });
+
+    return handlerInput.responseBuilder
+      .speak(outputSpeech)
+      .getResponse();
+  },
+};
 const HelpHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -146,7 +183,8 @@ exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
     ChristmasHandler,
-    AstronautHandler,
+    ShoppingHandler,
+    RecipeHandler,
     HelpHandler,
     CancelAndStopHandler,
     SessionEndedRequestHandler,
