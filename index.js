@@ -34,6 +34,45 @@ const ChristmasHandler = {
       .getResponse();
   },
 };
+
+const AstronautHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'LaunchRequest'
+      || (handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AstronautIntent');
+  },
+  async handle(handlerInput) {
+    let outputSpeech = 'This is the default message.';
+
+    await getRemoteData('http://react-thinkboard.herokuapp.com/api/v1/postits.json')
+      .then((response) => {
+        const data = JSON.parse(response);
+        outputSpeech = `There are currently ${data.length} messages on the thinkboard. `;
+        for (let i = 0; i < data.length; i += 1) {
+          if (i === 0) {
+            // first record
+            outputSpeech = `${outputSpeech}The messages are: ${data[i].content}, `;
+          } else if (i === data.length - 1) {
+            // last record
+            outputSpeech = `${outputSpeech}and ${data[i].content}.`;
+          } else {
+            // middle record(s)
+            outputSpeech = `${outputSpeech + data[i].content}, `;
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(`ERROR: ${err.message}`);
+        // set an optional error message here
+        // outputSpeech = err.message;
+      });
+
+    return handlerInput.responseBuilder
+      .speak(outputSpeech)
+      .getResponse();
+  },
+};
+
 const HelpHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -88,12 +127,26 @@ const ErrorHandler = {
   },
 };
 
+const getRemoteData = (url) => new Promise((resolve, reject) => {
+  const client = url.startsWith('https') ? require('https') : require('http');
+  const request = client.get(url, (response) => {
+    if (response.statusCode < 200 || response.statusCode > 299) {
+      reject(new Error(`Failed with status code: ${response.statusCode}`));
+    }
+    const body = [];
+    response.on('data', (chunk) => body.push(chunk));
+    response.on('end', () => resolve(body.join('')));
+  });
+  request.on('error', (err) => reject(err));
+});
+
 const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
     ChristmasHandler,
+    AstronautHandler,
     HelpHandler,
     CancelAndStopHandler,
     SessionEndedRequestHandler,
