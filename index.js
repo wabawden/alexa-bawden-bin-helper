@@ -7,10 +7,10 @@ const LaunchRequestHandler = {
   handle(handlerInput) {
     const today = Date.now()
     const bins =
-    today < new Date('November 13, 2020 06:00:00') && today > new Date('November 06, 2020 06:00:00') ||
-    today < new Date('November 27, 2020 06:00:00') && today > new Date('November 20, 2020 06:00:00') ||
-    today < new Date('December 11, 2020 06:00:00') && today > new Date('December 04, 2020 06:00:00') ||
-    today < new Date('December 25, 2020 06:00:00') && today > new Date('December 18, 2020 06:00:00') ?
+    today < new Date('February 19, 2021 06:00:00') && today > new Date('February 12, 2020 06:00:00') ||
+    today < new Date('March 05, 2020 06:00:00') && today > new Date('February 26, 2020 06:00:00') ||
+    today < new Date('March 19, 2020 06:00:00') && today > new Date('March 12, 2020 06:00:00') ||
+    today < new Date('April 02, 2020 06:00:00') && today > new Date('March 26, 2020 06:00:00') ?
     "food, recycling and general rubbish" : "food and paper"
     
     
