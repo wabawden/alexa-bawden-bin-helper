@@ -7,14 +7,14 @@ const LaunchRequestHandler = {
   handle(handlerInput) {
     const today = Date.now()
     const bins =
-    today < new Date('February 19, 2021 06:00:00') && today > new Date('February 12, 2020 06:00:00') ||
-    today < new Date('March 05, 2020 06:00:00') && today > new Date('February 26, 2020 06:00:00') ||
-    today < new Date('March 19, 2020 06:00:00') && today > new Date('March 12, 2020 06:00:00') ||
-    today < new Date('April 02, 2020 06:00:00') && today > new Date('March 26, 2020 06:00:00') ?
+    today < new Date('February 19, 2021 06:00:00') && today > new Date('February 12, 2021 06:00:00') ||
+    today < new Date('March 05, 2021 06:00:00') && today > new Date('February 26, 2021 06:00:00') ||
+    today < new Date('March 19, 2021 06:00:00') && today > new Date('March 12, 2021 06:00:00') ||
+    today < new Date('April 02, 2021 06:00:00') && today > new Date('March 26, 2021 06:00:00') ?
     "food, recycling and general rubbish" : "food and paper"
     
     
-    const speakOutput = 'Welcome to the bin bot, this friday it is ' + bins + ' collection. Don\'t forget to check the Christmas timetable.'
+    const speakOutput = 'Welcome to the bin bot, this friday it is ' + bins + ' collection.'
     return handlerInput.responseBuilder
       .speak(speakOutput)
       .getResponse();
