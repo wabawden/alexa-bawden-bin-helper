@@ -13,7 +13,7 @@ const LaunchRequestHandler = {
         today > new Date("October 22, 2021 06:00:00")) ||
       (today < new Date("November 12, 2021 06:00:00") &&
         today > new Date("November 05, 2021 06:00:00")) ||
-      (today < new Date("Novembe r26, 2021 06:00:00") &&
+      (today < new Date("November 26, 2021 06:00:00") &&
         today > new Date("November 19, 2021 06:00:00"))
         ? "food, recycling and general rubbish"
         : "food and paper";
