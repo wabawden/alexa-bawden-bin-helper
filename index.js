@@ -7,16 +7,17 @@ const binType = {
 
 const getBinsText = (binType) => {
   switch (binType) {
-    case binType.PaperAndCard:
+    case "PaperAndCard":
       return "food and paper";
-    case binType.RubbishAndRecycling:
+    case "RubbishAndRecycling":
       return "food, recycling, garden waste and general rubbish";
     default:
-      throw new Error("invalid bin type");
+      return;
   }
 };
 
 const binsTimetable = [
+  { date: new Date("May 12, 2023 06:00:00"), bin: binType.RubbishAndRecycling },
   { date: new Date("May 19, 2023 06:00:00"), bin: binType.PaperAndCard },
   { date: new Date("May 26, 2023 06:00:00"), bin: binType.RubbishAndRecycling },
   { date: new Date("June 02, 2023 06:00:00"), bin: binType.PaperAndCard },
@@ -92,29 +93,41 @@ const getBinDay = (index = 0) => {
     return null;
   }
 
-  if (today > binsTimetable[index].date) {
-    return null;
-  }
-
   if (
-    today < binsTimetable[index].date &&
-    today > binsTimetable[index + 1].date
+    binsTimetable[index + 1] &&
+    today > binsTimetable[index].date &&
+    today < binsTimetable[index + 1].date
   ) {
     return binsTimetable[index + 1];
   }
   return getBinDay(index + 1);
 };
 
+const binDay = getBinDay();
+
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === "LaunchRequest";
   },
   handle(handlerInput) {
-    binDay = getBinDay();
-
     const speakOutput = `Welcome to the bin bot, your next collection of ${getBinsText(
       binDay.bin
-    )} is on ${binDay.date.to}}`;
+    )} is on ${binDay.date.toString()}`;
+    return handlerInput.responseBuilder.speak(speakOutput).getResponse();
+  },
+};
+
+const BinsHandler = {
+  canHandle(handlerInput) {
+    return (
+      handlerInput.requestEnvelope.request.type === "IntentRequest" &&
+      handlerInput.requestEnvelope.request.intent.name === "ChristmasIntent"
+    );
+  },
+  handle(handlerInput) {
+    const speakOutput =
+      "The Christmas Timetable is not available yet, please check later. Jingle Bells!";
+
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   },
 };
@@ -123,7 +136,7 @@ const ChristmasHandler = {
   canHandle(handlerInput) {
     return (
       handlerInput.requestEnvelope.request.type === "IntentRequest" &&
-      handlerInput.requestEnvelope.request.intent.name === "ChristmasIntent"
+      handlerInput.requestEnvelope.request.intent.name === "BinsIntent"
     );
   },
   handle(handlerInput) {
@@ -294,6 +307,7 @@ exports.handler = skillBuilder
     ShoppingHandler,
     RecipeHandler,
     HelpHandler,
+    BinsHandler,
     CancelAndStopHandler,
     SessionEndedRequestHandler
   )
