@@ -1,25 +1,120 @@
 const Alexa = require("ask-sdk-core");
 
+const binType = {
+  PaperAndCard: "PaperAndCard",
+  RubbishAndRecycling: "RubbishAndRecycling",
+};
+
+const getBinsText = (binType) => {
+  switch (binType) {
+    case binType.PaperAndCard:
+      return "food and paper";
+    case binType.RubbishAndRecycling:
+      return "food, recycling, garden waste and general rubbish";
+    default:
+      throw new Error("invalid bin type");
+  }
+};
+
+const binsTimetable = [
+  { date: new Date("May 19, 2023 06:00:00"), bin: binType.PaperAndCard },
+  { date: new Date("May 26, 2023 06:00:00"), bin: binType.RubbishAndRecycling },
+  { date: new Date("June 02, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("June 09, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("June 16, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("June 23, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("June 30, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("July 07, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("July 14, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("July 21, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("July 28, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("August 04, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("August 11, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("August 18, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("August 25, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("September 01, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("September 08, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("September 15, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("September 22, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("September 29, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("October 06, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("October 13, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("October 20, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("October 27, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("November 03, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("November 10, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+  { date: new Date("November 17, 2023 06:00:00"), bin: binType.PaperAndCard },
+  {
+    date: new Date("November 24, 2023 06:00:00"),
+    bin: binType.RubbishAndRecycling,
+  },
+];
+
+const getBinDay = (index = 0) => {
+  const today = Date.now();
+  if (index === binsTimetable.length) {
+    return null;
+  }
+
+  if (today > binsTimetable[index].date) {
+    return null;
+  }
+
+  if (
+    today < binsTimetable[index].date &&
+    today > binsTimetable[index + 1].date
+  ) {
+    return binsTimetable[index + 1];
+  }
+  return getBinDay(index + 1);
+};
+
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === "LaunchRequest";
   },
   handle(handlerInput) {
-    const today = Date.now();
-    const bins =
-      (today < new Date("October 15, 2021 06:00:00") &&
-        today > new Date("October 08, 2021 06:00:00")) ||
-      (today < new Date("October 29, 2021 06:00:00") &&
-        today > new Date("October 22, 2021 06:00:00")) ||
-      (today < new Date("November 12, 2021 06:00:00") &&
-        today > new Date("November 05, 2021 06:00:00")) ||
-      (today < new Date("November 26, 2021 06:00:00") &&
-        today > new Date("November 19, 2021 06:00:00"))
-        ? "food, recycling and general rubbish"
-        : "food and paper";
+    binDay = getBinDay();
 
-    const speakOutput =
-      "Welcome to the bin bot, this friday it is " + bins + " collection.";
+    const speakOutput = `Welcome to the bin bot, your next collection of ${getBinsText(
+      binDay.bin
+    )} is on ${binDay.date.to}}`;
     return handlerInput.responseBuilder.speak(speakOutput).getResponse();
   },
 };
